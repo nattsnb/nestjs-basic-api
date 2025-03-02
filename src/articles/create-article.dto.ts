@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Expose, Transform } from 'class-transformer';
 
 export class CreateArticleDto {
   @IsString()
@@ -9,4 +10,16 @@ export class CreateArticleDto {
   @IsString()
   @IsNotEmpty()
   title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Expose()
+  @Transform(({ value, obj }) => {
+    if (value) {
+      return value;
+    }
+    const title: string = obj.title;
+    return title.toLowerCase().replaceAll(' ', '-');
+  })
+  urlSlug: string;
 }

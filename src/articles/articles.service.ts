@@ -8,6 +8,7 @@ import { ArticleNotFoundException } from './article-not-found-exception';
 import { CreateArticleDto } from './create-article.dto';
 import { ArticleDto } from './article.dto';
 import { UpdateArticleDto } from './update-article.dto';
+import { SlugNotUniqueException } from './slug-not-unique.exception';
 
 @Injectable()
 export class ArticlesService {
@@ -39,11 +40,21 @@ export class ArticlesService {
     return article;
   }
 
-  create(article: CreateArticleDto) {
+  async create(article: CreateArticleDto) {
     this.loggerService.log(`Creating new article.`);
-    return this.prismaService.article.create({
-      data: article,
-    });
+    try {
+      return await this.prismaService.article.create({
+        data: article,
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === PrismaError.UniqueConstraintViolated
+      ) {
+        throw new SlugNotUniqueException();
+      }
+      throw error;
+    }
   }
 
   async update(id: number, article: UpdateArticleDto) {
@@ -59,11 +70,11 @@ export class ArticlesService {
         },
       });
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === PrismaError.RecordDoesNotExist
-      ) {
+      if (error.code === PrismaError.RecordDoesNotExist) {
         throw new ArticleNotFoundException(id);
+      }
+      if (error.code === PrismaError.UniqueConstraintViolated) {
+        throw new SlugNotUniqueException();
       }
       throw error;
     }
