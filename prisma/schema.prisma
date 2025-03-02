@@ -13,3 +13,10 @@ model Article {
    content  String?
    urlSlug  String @unique
 }
+
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  name      String
+  password  String
+}

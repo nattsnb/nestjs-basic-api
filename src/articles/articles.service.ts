@@ -6,7 +6,6 @@ import { Prisma } from '@prisma/client';
 import { PrismaError } from '../database/prisma-error.enum';
 import { ArticleNotFoundException } from './article-not-found-exception';
 import { CreateArticleDto } from './create-article.dto';
-import { ArticleDto } from './article.dto';
 import { UpdateArticleDto } from './update-article.dto';
 import { SlugNotUniqueException } from './slug-not-unique.exception';
 
@@ -70,12 +69,15 @@ export class ArticlesService {
         },
       });
     } catch (error) {
-      if (error.code === PrismaError.RecordDoesNotExist) {
+      const prismaError = error as Prisma.PrismaClientKnownRequestError;
+
+      if (prismaError.code === PrismaError.RecordDoesNotExist) {
         throw new ArticleNotFoundException(id);
       }
-      if (error.code === PrismaError.UniqueConstraintViolated) {
+      if (prismaError.code === PrismaError.UniqueConstraintViolated) {
         throw new SlugNotUniqueException();
       }
+
       throw error;
     }
   }
