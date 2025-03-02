@@ -1,79 +1,82 @@
-import {Injectable, NotFoundException} from "@nestjs/common";
-import {Article} from "./article";
-import {ArticleDto} from "./article.dto";
-import {LoggerService} from "../logger/logger.service";
-import {PrismaService} from "../database/prisma.service";
-import {Prisma} from "@prisma/client";
-import {PrismaError} from "../database/prisma-error.enum";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Article } from './article';
+import { LoggerService } from '../logger/logger.service';
+import { PrismaService } from '../database/prisma.service';
+import { Prisma } from '@prisma/client';
+import { PrismaError } from '../database/prisma-error.enum';
+import { ArticleNotFoundException } from './article-not-found-exception';
+import { CreateArticleDto } from './create-article.dto';
+import { ArticleDto } from './article.dto';
+import { UpdateArticleDto } from './update-article.dto';
 
 @Injectable()
 export class ArticlesService {
   constructor(
     private readonly loggerService: LoggerService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
   ) {}
 
   private articles: Article[] = [];
 
   getAll() {
-    this.loggerService.log("Getting a list of all articles.")
+    this.loggerService.log('Getting a list of all articles.');
     return this.prismaService.article.findMany();
   }
 
   async getById(id: number) {
-    this.loggerService.log(`Getting article with id ${id}.`)
-    const article =  await this.prismaService.article.findUnique({
+    this.loggerService.log(`Getting article with id ${id}.`);
+    const article = await this.prismaService.article.findUnique({
       where: {
         id,
-      }
-    })
+      },
+    });
 
-    if(!article) {
-      this.loggerService.warn("Trying to access article that doesn't exist.")
-      throw new NotFoundException();
+    if (!article) {
+      this.loggerService.warn("Trying to access article that doesn't exist.");
+      throw new ArticleNotFoundException(id);
     }
 
     return article;
   }
 
-  create(article: ArticleDto) {
-    this.loggerService.log(`Creating new article.`)
+  create(article: CreateArticleDto) {
+    this.loggerService.log(`Creating new article.`);
     return this.prismaService.article.create({
-      data: article
+      data: article,
     });
   }
 
-  async update(id: number, article: ArticleDto) {
-    this.loggerService.log(`Updating article with id ${id}.`)
+  async update(id: number, article: UpdateArticleDto) {
+    this.loggerService.log(`Updating article with id ${id}.`);
     try {
       return await this.prismaService.article.update({
         data: {
           ...article,
-          id: undefined
+          id: undefined,
         },
         where: {
           id,
-        }
-      })
+        },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === PrismaError.RecordDoesNotExist
       ) {
-        throw new NotFoundException();
+        throw new ArticleNotFoundException(id);
       }
       throw error;
     }
   }
 
   async delete(id: number) {
-    this.loggerService.log(`Deleting article with id ${id}.`)
+    this.loggerService.log(`Deleting article with id ${id}.`);
     try {
       return await this.prismaService.article.delete({
         where: {
           id,
-        }
-      })
+        },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
