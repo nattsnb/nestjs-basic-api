@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post} from "@nestjs/common";
 import {ArticlesService} from "./articles.service";
 import {ArticleDto} from "./article.dto";
 
@@ -21,7 +21,7 @@ export class ArticlesController {
       return this.articlesService.getById(id);
     }
 
-    @Put(":id")
+    @Patch(":id")
     update(
       @Param("id", ParseIntPipe) id: number,
       @Body() article: ArticleDto
