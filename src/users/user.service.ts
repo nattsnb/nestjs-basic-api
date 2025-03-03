@@ -54,6 +54,7 @@ export class UserService {
       ) {
         throw new ConflictException('User with this email already exists');
       }
+      throw error
     }
   }
 }
