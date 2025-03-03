@@ -14,8 +14,8 @@ import { LogInDto } from './dto/log-in.dto';
 import { Response } from 'express';
 import { RequestWithUser } from './request-with-user';
 import { JwtAuthenticationGuard } from './jwt-authentication.guard';
-import {AuthenticationResponseDto} from "./dto/authentication-response.dto";
-import {TransformPlainToInstance} from "class-transformer";
+import { AuthenticationResponseDto } from './dto/authentication-response.dto';
+import { TransformPlainToInstance } from 'class-transformer';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -24,7 +24,7 @@ export class AuthenticationController {
   @Post('sign-up')
   @TransformPlainToInstance(AuthenticationResponseDto)
   signUp(@Body() signUpData: SignUpDto) {
-    return this.authenticationService.signUp(signUpData)
+    return this.authenticationService.signUp(signUpData);
   }
 
   @HttpCode(200)
@@ -48,11 +48,10 @@ export class AuthenticationController {
     response.setHeader('Set-Cookie', cookie);
   }
 
-
   @TransformPlainToInstance(AuthenticationResponseDto)
   @UseGuards(JwtAuthenticationGuard)
   @Get()
   authenticate(@Req() request: RequestWithUser) {
-    return request.user
+    return request.user;
   }
 }

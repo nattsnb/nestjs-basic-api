@@ -15,9 +15,19 @@ model Article {
 }
 
 model User {
-  id          Int     @id @default(autoincrement())
-  email       String  @unique
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
   name        String
   password    String
   phoneNumber String?
+  address     Address?  @relation(fields: [addressId], references: [id])
+  addressId   Int?      @unique
+}
+
+model Address {
+  id      Int   @id @default(autoincrement())
+  city    String
+  street  String
+  country String
+  User    User?
 }

@@ -45,7 +45,15 @@ export class UserService {
     this.loggerService.log(`Creating new user.`);
     try {
       return await this.prismaService.user.create({
-        data: user,
+        data: {
+          name: user.name,
+          email: user.email,
+          password: user.password,
+          phoneNumber: user.phoneNumber,
+          address: {
+            create: user.address,
+          },
+        },
       });
     } catch (error) {
       if (
@@ -54,7 +62,7 @@ export class UserService {
       ) {
         throw new ConflictException('User with this email already exists');
       }
-      throw error
+      throw error;
     }
   }
 }
