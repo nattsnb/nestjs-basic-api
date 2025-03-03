@@ -4,6 +4,6 @@ import { CanBeUndefined } from '../../Utilities/can-be-undefined';
 export class UpdateCategoryDto {
   @IsString()
   @IsNotEmpty()
-  @CanBeUndefined
+  @CanBeUndefined()
   name?: string;
 }
