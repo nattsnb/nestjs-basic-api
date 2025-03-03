@@ -8,10 +8,12 @@ datasource db {
 }
 
 model Article {
-   id       Int     @id @default(autoincrement())
-   title    String
-   content  String?
-   urlSlug  String @unique
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  urlSlug   String  @unique
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  Int
 }
 
 model User {
@@ -22,6 +24,7 @@ model User {
   phoneNumber String?
   address     Address?  @relation(fields: [addressId], references: [id])
   addressId   Int?      @unique
+  articles    Article[]
 }
 
 model Address {

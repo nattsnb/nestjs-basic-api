@@ -1,5 +1,5 @@
 import { Exclude, Transform } from 'class-transformer';
-import { User } from '@prisma/client';
+import { Address, User } from '@prisma/client';
 
 export class AuthenticationResponseDto implements User {
   id: number;
@@ -20,4 +20,6 @@ export class AuthenticationResponseDto implements User {
   password: string;
 
   addressId: number | null;
+
+  address?: Address;
 }

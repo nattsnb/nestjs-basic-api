@@ -19,6 +19,9 @@ export class UserService {
       where: {
         email,
       },
+      include: {
+        address: true,
+      },
     });
     if (!user) {
       this.loggerService.warn("User with this email doesn't exist.");
@@ -32,6 +35,9 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: {
         id,
+      },
+      include: {
+        address: true,
       },
     });
     if (!user) {
@@ -53,6 +59,9 @@ export class UserService {
           address: {
             create: user.address,
           },
+        },
+        include: {
+          address: true,
         },
       });
     } catch (error) {

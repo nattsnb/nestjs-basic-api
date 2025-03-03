@@ -39,11 +39,20 @@ export class ArticlesService {
     return article;
   }
 
-  async create(article: CreateArticleDto) {
+  async create(article: CreateArticleDto, authorId: number) {
     this.loggerService.log(`Creating new article.`);
     try {
       return await this.prismaService.article.create({
-        data: article,
+        data: {
+          title: article.title,
+          content: article.content,
+          urlSlug: article.urlSlug,
+          author: {
+            connect: {
+              id: authorId,
+            },
+          },
+        },
       });
     } catch (error) {
       if (
