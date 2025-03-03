@@ -13,7 +13,7 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { JwtAuthenticationGuard } from '../authentication/jwt-authentication.guard';
 
-@Controller()
+@Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
