@@ -17,6 +17,7 @@ import { AppController } from './app.controller';
         DATABASE_URL: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION_TIME: Joi.string().required(),
+        FRONTEND_URL: Joi.string().required(),
       }),
     }),
   ],
