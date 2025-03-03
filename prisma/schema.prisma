@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Article {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  urlSlug   String  @unique
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+  id          Int     @id @default(autoincrement())
+  title       String
+  content     String?
+  urlSlug     String  @unique
+  author      User    @relation(fields: [authorId], references: [id])
+  authorId    Int
+  categories  Category[]
 }
 
 model User {
@@ -34,3 +35,10 @@ model Address {
   country String
   User    User?
 }
+
+model Category {
+  id        Int     @id @default(autoincrement())
+  name      String
+  articles  Article[]
+}
+

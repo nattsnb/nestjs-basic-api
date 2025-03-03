@@ -6,12 +6,15 @@ import * as Joi from 'joi';
 import { AuthenticationController } from './authentication/authentication.controller';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { AppController } from './app.controller';
+import { CategoriesService } from './categories/categories.service';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
     ArticlesModule,
     AuthenticationModule,
     LoggerModule,
+    CategoriesModule,
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         DATABASE_URL: Joi.string().required(),
