@@ -12,6 +12,7 @@ import { ArticleNotFoundException } from './article-not-found-exception';
 import { CreateArticleDto } from './create-article.dto';
 import { UpdateArticleDto } from './update-article.dto';
 import { SlugNotUniqueException } from './slug-not-unique.exception';
+import { transformAuthInfo } from 'passport';
 
 @Injectable()
 export class ArticlesService {
@@ -129,12 +130,19 @@ export class ArticlesService {
   }
 
   deleteMultipleArticles(ids: number[]) {
-    return this.prismaService.article.deleteMany({
-      where: {
-        id: {
-          in: ids,
+    return this.prismaService.$transaction(async (transactionClient) => {
+      const deleteResponse = await this.prismaService.article.deleteMany({
+        where: {
+          id: {
+            in: ids,
+          },
         },
-      },
+      });
+      if (deleteResponse.count !== ids.length) {
+        throw new NotFoundException(
+          'One of the articles could not be deleted.',
+        );
+      }
     });
   }
 }

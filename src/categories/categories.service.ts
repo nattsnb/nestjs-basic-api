@@ -76,23 +76,31 @@ export class CategoriesService {
   }
 
   async deleteCategoryWithArticles(categoryId: number) {
-    const category = await this.getById(categoryId);
-
-    const articlesIds = category.articles.map((article) => article.id);
-
-    return this.prismaService.$transaction([
-      this.prismaService.article.deleteMany({
+    return this.prismaService.$transaction(async (transactionClient) => {
+      const category = await transactionClient.category.findUnique({
+        where: {
+          id: categoryId,
+        },
+        include: {
+          articles: true,
+        },
+      });
+      if (!category) {
+        throw new NotFoundException();
+      }
+      const articlesIds = category.articles.map((article) => article.id);
+      await transactionClient.article.deleteMany({
         where: {
           id: {
             in: articlesIds,
           },
         },
-      }),
-      this.prismaService.category.delete({
+      });
+      await transactionClient.category.delete({
         where: {
           id: categoryId,
         },
-      }),
-    ]);
+      });
+    });
   }
 }
