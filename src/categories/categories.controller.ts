@@ -22,7 +22,7 @@ export class CategoriesController {
     return this.categoriesService.getAll();
   }
 
-  @Get()
+  @Get(':id')
   getById(@Param('id', ParseIntPipe) id: number) {
     return this.categoriesService.getById(id);
   }
@@ -45,6 +45,6 @@ export class CategoriesController {
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
   async delete(@Param('id', ParseIntPipe) id: number) {
-    return await this.categoriesService.delete(id);
+    return await this.categoriesService.deleteCategoryWithArticles(id);
   }
 }

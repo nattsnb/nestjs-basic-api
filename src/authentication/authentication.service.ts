@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { compare, hash } from 'bcrypt';
@@ -7,6 +11,7 @@ import { LogInDto } from './dto/log-in.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './token-payload.interface';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AuthenticationService {
@@ -18,15 +23,21 @@ export class AuthenticationService {
 
   async signUp(signUpData: SignUpDto) {
     const saltRounds = 10;
-    const hashedPassword = await hash(signUpData.password, saltRounds);
-
-    return this.userService.create({
-      name: signUpData.name,
-      email: signUpData.email,
-      password: hashedPassword,
-      phoneNumber: signUpData.phoneNumber,
-      address: signUpData.address,
-    });
+    try {
+      const hashedPassword = await hash(signUpData.password, saltRounds);
+      return await this.userService.create({
+        name: signUpData.name,
+        email: signUpData.email,
+        password: hashedPassword,
+        phoneNumber: signUpData.phoneNumber,
+        address: signUpData.address,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientValidationError) {
+        throw new BadRequestException();
+      }
+      throw error;
+    }
   }
 
   private async getUserByEmail(email: string) {
